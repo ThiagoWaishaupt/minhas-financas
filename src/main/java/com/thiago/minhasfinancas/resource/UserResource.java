@@ -4,24 +4,25 @@ import com.thiago.minhasfinancas.exception.AuthenticateException;
 import com.thiago.minhasfinancas.exception.BusinessRuleException;
 import com.thiago.minhasfinancas.model.User;
 import com.thiago.minhasfinancas.model.UserDTO;
+import com.thiago.minhasfinancas.service.ReleaseService;
 import com.thiago.minhasfinancas.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 @AllArgsConstructor
 public class UserResource {
 
-    private final UserService userService;
-
-    @GetMapping("/health")
-    public String health(){
-        return "Hello World!";
-    }
+    private UserService userService;
+    private ReleaseService releaseService;
 
     @PostMapping
     public ResponseEntity save( @RequestBody UserDTO userDTO){ //The annotation forces the json fields to be equal to DTO fields
@@ -47,6 +48,19 @@ public class UserResource {
         } catch (AuthenticateException e){
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/balance/{id}")
+    public ResponseEntity balance(@PathVariable("id") Long id){
+
+        Optional<User> user = userService.searchUser(id);
+        if(user.isEmpty()){
+            return new ResponseEntity("User not found.", HttpStatus.BAD_REQUEST);
+        }
+
+        BigDecimal balance = releaseService.getBalance(id);
+
+        return new ResponseEntity(balance, HttpStatus.OK);
     }
 
 }

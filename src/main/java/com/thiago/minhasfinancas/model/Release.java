@@ -2,7 +2,10 @@ package com.thiago.minhasfinancas.model;
 
 import com.thiago.minhasfinancas.model.enums.ReleaseStatus;
 import com.thiago.minhasfinancas.model.enums.ReleaseType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.convert.Jsr310Converters;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
@@ -12,6 +15,9 @@ import java.time.LocalDate;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "release", schema = "financas")
 public class Release {
 

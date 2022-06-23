@@ -3,6 +3,7 @@ package com.thiago.minhasfinancas.service;
 import com.thiago.minhasfinancas.exception.BusinessRuleException;
 import com.thiago.minhasfinancas.model.Release;
 import com.thiago.minhasfinancas.model.enums.ReleaseStatus;
+import com.thiago.minhasfinancas.model.enums.ReleaseType;
 import com.thiago.minhasfinancas.repository.ReleaseRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Example;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -24,6 +26,7 @@ public class ReleaseServiceImpl implements ReleaseService{
     @Transactional
     public Release save(Release release) {
         validate(release);
+        release.setReleaseStatus(ReleaseStatus.PENDENTE);
         return releaseRepository.save(release);
     }
 
@@ -32,7 +35,6 @@ public class ReleaseServiceImpl implements ReleaseService{
     public Release update(Release release) {
         Objects.requireNonNull(release.getId());
         validate(release);
-        release.setReleaseStatus(ReleaseStatus.PENDENTE);
         return releaseRepository.save(release); //save method update fields too
     }
 
@@ -56,12 +58,6 @@ public class ReleaseServiceImpl implements ReleaseService{
     }
 
     @Override
-    public void updateStatus(Release release, ReleaseStatus status) {
-        release.setReleaseStatus(status);
-        update(release);
-    }
-
-    @Override
     public void validate(Release release) {
         if(Objects.isNull(release.getDescription()) || release.getDescription().trim().equals("")){
            throw new BusinessRuleException("Invalid Description.");
@@ -75,7 +71,7 @@ public class ReleaseServiceImpl implements ReleaseService{
             throw new BusinessRuleException("Invalid Year.");
         }
 
-        if(Objects.isNull(release.getUser()) || Objects.isNull(release.getId())){
+        if(Objects.isNull(release.getUser())){
             throw new BusinessRuleException("Inform a User.");
         }
 
@@ -86,5 +82,24 @@ public class ReleaseServiceImpl implements ReleaseService{
         if(Objects.isNull(release.getReleaseType())){
             throw new BusinessRuleException("Inform a Release Type.");
         }
+    }
+
+    @Override
+    public Optional<Release> searchReleaseById(Long idRelease) {
+        return releaseRepository.findById(idRelease);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal getBalance(Long userId) {
+        BigDecimal receita = releaseRepository.getUserBalance(userId, ReleaseType.RECEITA);
+        BigDecimal despesa = releaseRepository.getUserBalance(userId, ReleaseType.DESPESA);
+
+        if (Objects.isNull(receita))
+            receita = BigDecimal.ZERO;
+        if(Objects.isNull(despesa))
+            despesa = BigDecimal.ZERO;
+
+        return receita.subtract(despesa);
     }
 }
