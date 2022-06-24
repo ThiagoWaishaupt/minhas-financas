@@ -5,6 +5,7 @@ import com.thiago.minhasfinancas.model.Release;
 import com.thiago.minhasfinancas.model.enums.ReleaseStatus;
 import com.thiago.minhasfinancas.model.enums.ReleaseType;
 import com.thiago.minhasfinancas.repository.ReleaseRepository;
+import com.thiago.minhasfinancas.util.Constants;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -60,27 +61,27 @@ public class ReleaseServiceImpl implements ReleaseService{
     @Override
     public void validate(Release release) {
         if(Objects.isNull(release.getDescription()) || release.getDescription().trim().equals("")){
-           throw new BusinessRuleException("Invalid Description.");
+           throw new BusinessRuleException(Constants.INVALID_DESCRIPTION);
         }
 
         if(Objects.isNull(release.getMonth()) || release.getMonth() < 1 || release.getMonth() > 12){
-            throw new BusinessRuleException("Invalid Month.");
+            throw new BusinessRuleException(Constants.INVALID_MONTH);
         }
 
         if(Objects.isNull(release.getYear()) || release.getYear().toString().length() != 4){
-            throw new BusinessRuleException("Invalid Year.");
+            throw new BusinessRuleException(Constants.INVALID_YEAR);
         }
 
         if(Objects.isNull(release.getUser())){
-            throw new BusinessRuleException("Inform a User.");
+            throw new BusinessRuleException(Constants.INVALID_USER);
         }
 
         if(Objects.isNull(release.getValue()) || release.getValue().compareTo(BigDecimal.ZERO) < 1){ //compare with BigDecimal
-            throw new BusinessRuleException("Invalid Value.");
+            throw new BusinessRuleException(Constants.INVALID_VALUE);
         }
 
         if(Objects.isNull(release.getReleaseType())){
-            throw new BusinessRuleException("Inform a Release Type.");
+            throw new BusinessRuleException(Constants.INVALID_RELEASE_TYPE);
         }
     }
 

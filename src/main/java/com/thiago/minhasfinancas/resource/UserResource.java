@@ -6,6 +6,7 @@ import com.thiago.minhasfinancas.model.User;
 import com.thiago.minhasfinancas.model.UserDTO;
 import com.thiago.minhasfinancas.service.ReleaseService;
 import com.thiago.minhasfinancas.service.UserService;
+import com.thiago.minhasfinancas.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping(Constants.USER_BASE_URL)
 @AllArgsConstructor
 public class UserResource {
 
@@ -40,7 +41,7 @@ public class UserResource {
         }
     }
 
-    @PostMapping("/authenticate")
+    @PostMapping(Constants.USER_AUTHENTICATE)
     public ResponseEntity authenticate(@RequestBody UserDTO userDTO){
         try{
             User userResult = userService.authenticate(userDTO.getEmail(), userDTO.getPassword());
@@ -50,7 +51,7 @@ public class UserResource {
         }
     }
 
-    @GetMapping("/balance/{id}")
+    @GetMapping(Constants.USER_BALANCE)
     public ResponseEntity balance(@PathVariable("id") Long id){
 
         Optional<User> user = userService.searchUser(id);
